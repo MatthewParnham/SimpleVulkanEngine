@@ -1,8 +1,8 @@
 #include "first_app.hpp"
 
 #include <stdexcept>
-#include <iostream>
 #include <array>
+#include <cassert>
 
 namespace lve {
 
@@ -47,7 +47,12 @@ namespace lve {
 	}
 
 	void FirstApp::createPipeline() {
-		auto pipelineConfig = LvePipeline::defaultPipelineConfigInfo(lveSwapChain->width(),lveSwapChain->height());
+
+		assert(lveSwapChain != nullptr && "Cannot create pipeline before swap chain");
+		assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
+
+		PipelineConfigInfo pipelineConfig{};
+		LvePipeline::defaultPipelineConfigInfo(pipelineConfig);
 		pipelineConfig.renderPass = lveSwapChain->getRenderPass();
 		pipelineConfig.pipelineLayout = pipelineLayout;
 		lvePipeline = std::make_unique<LvePipeline>(
@@ -66,10 +71,29 @@ namespace lve {
 		}
 
 		vkDeviceWaitIdle(lveDevice.device());
-		//remove this later
-		lveSwapChain = nullptr;
-		lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent);
+
+		if(lveSwapChain == nullptr) {
+			lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent);
+		} else {
+			lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent, std::move(lveSwapChain));
+			if(lveSwapChain->imageCount() != commandBuffers.size()) {
+				freeCommandBuffers();
+				createCommandBuffers();
+			}
+		}
+		
+
+		// if render pass copmatible do nothing else
 		createPipeline();
+	}
+
+	void FirstApp::freeCommandBuffers() {
+		vkFreeCommandBuffers(
+			lveDevice.device(), 
+			lveDevice.getCommandPool(), 
+			static_cast<uint32_t>(commandBuffers.size()), 
+			commandBuffers.data());
+		commandBuffers.clear();
 	}
 
 	void FirstApp::createCommandBuffers() {
@@ -110,6 +134,17 @@ namespace lve {
 
 		vkCmdBeginRenderPass(commandBuffers[imageIndex],&renderPassInfo,VK_SUBPASS_CONTENTS_INLINE);
 
+		VkViewport viewport{};
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = static_cast<float>(lveSwapChain->getSwapChainExtent().width);
+		viewport.height = static_cast<float>(lveSwapChain->getSwapChainExtent().height);
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+		VkRect2D scissor{{0,0}, lveSwapChain->getSwapChainExtent()};
+		vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);\
+		vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
+
 		lvePipeline->bind(commandBuffers[imageIndex]);
 		lveModel->bind(commandBuffers[imageIndex]);
 		lveModel->draw(commandBuffers[imageIndex]);
@@ -141,7 +176,6 @@ namespace lve {
 			recreateSwapChain();
 		}
 		if(result != VK_SUCCESS) {
-			std::cout << result << std::endl;
 			throw std::runtime_error("failed to present swap chain image");
 		}
 	}
