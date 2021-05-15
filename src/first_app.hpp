@@ -1,7 +1,6 @@
 #pragma once
 
 #include "lve_window.hpp"
-#include "lve_pipeline.hpp"
 #include "lve_device.hpp"
 #include "lve_renderer.hpp"
 #include "lve_game_object.hpp"
@@ -27,15 +26,11 @@ namespace lve {
 
 	private:
 		void loadGameObjects();
-		void createPipelineLayout();
-		void createPipeline();
-		void renderGameObjects(VkCommandBuffer commandBuffer);
 
 		LveWindow lveWindow{ WIDTH,HEIGHT,"Simple Vulkan Window" };
 		LveDevice lveDevice{lveWindow};
 		LveRenderer lveRenderer{lveWindow, lveDevice};
-		std::unique_ptr<LvePipeline> lvePipeline;
-		VkPipelineLayout pipelineLayout;
+
 		std::vector<LveGameObject> gameObjects;
 	};
 }
