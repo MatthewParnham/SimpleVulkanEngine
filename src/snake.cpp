@@ -100,9 +100,17 @@ namespace lve {
         frame = (frame + 1) % (1000 - (score * 20));
         if(frame == 0) {
             currPos.x = (int)(currPos.x + direction.x);
-            if(currPos.x < 0 || currPos.x > gridSize - 1) {reset(); return;}
+            if(currPos.x < 0 || currPos.x > gridSize - 1) {
+                std::cout << "loser" << std::endl;
+                reset(); 
+                return;
+            }
             currPos.y = (int)(currPos.y + direction.y);
-            if(currPos.y < 0 || currPos.y > gridSize - 1) {reset(); return;}
+            if(currPos.y < 0 || currPos.y > gridSize - 1) {
+                std::cout << "loser" << std::endl;
+                reset(); 
+                return;
+            }
             //std:: cout << currPos.x << ',' << currPos.y << std:: endl;
             
             for(int i = snakeBody.size() - 1; i > 0; i--) {
@@ -116,6 +124,7 @@ namespace lve {
                         snakeBody[0].transform2d.translation.x == snakeBody[i].transform2d.translation.x &&
                         snakeBody[0].transform2d.translation.y == snakeBody[i].transform2d.translation.y
                     ) {
+                        std::cout << "loser" << std::endl;
                         reset();
                         return;
                     }
