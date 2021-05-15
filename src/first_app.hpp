@@ -4,6 +4,7 @@
 #include "lve_device.hpp"
 #include "lve_renderer.hpp"
 #include "lve_game_object.hpp"
+#include "snake.hpp"
 
 // std
 #include <memory>
@@ -32,5 +33,7 @@ namespace lve {
 		LveRenderer lveRenderer{lveWindow, lveDevice};
 
 		std::vector<LveGameObject> gameObjects;
+
+		Snake snake{lveDevice};
 	};
 }

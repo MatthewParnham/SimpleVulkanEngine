@@ -10,7 +10,7 @@
 
 namespace lve {
 
-    std::unique_ptr<LveModel> createCircleModel(LveDevice& device, unsigned int numSides) {
+    std::unique_ptr<LveModel> GenPrimitives::createCircleModel(LveDevice& device, unsigned int numSides) {
         std::vector<LveModel::Vertex> uniqueVertices{};
         for (int i = 0; i < numSides; i++) {
             float angle = i * glm::two_pi<float>() / numSides;
@@ -27,7 +27,7 @@ namespace lve {
         return std::make_unique<LveModel>(device, vertices);
     }
 
-    std::unique_ptr<LveModel> createSquareModel(LveDevice& device, glm::vec2 offset) {
+    std::unique_ptr<LveModel> GenPrimitives::createSquareModel(LveDevice& device, glm::vec2 offset) {
         std::vector<LveModel::Vertex> vertices = {
             {{-0.5f, -0.5f}},
             {{0.5f, 0.5f}},

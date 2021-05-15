@@ -20,14 +20,23 @@ namespace lve {
 	FirstApp::~FirstApp() {}
 
 	void FirstApp::run() {
-		SimpleRenderSystem simpleRenderSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
 
+		//init
+		snake.Start();
+		SimpleRenderSystem simpleRenderSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
 		while (!lveWindow.shouldClose()) {
 			glfwPollEvents();
-			
+
 			if(auto commandBuffer = lveRenderer.beginFrame()) {
+
+				//update
+				snake.Update();
+
 				lveRenderer.beginSwapChainRenderPass(commandBuffer);
 				simpleRenderSystem.renderGameObjects(commandBuffer,gameObjects);
+				simpleRenderSystem.renderGameObjects(commandBuffer,snake.gameObjects);
+				simpleRenderSystem.renderGameObjects(commandBuffer,snake.snakeBody);
+				simpleRenderSystem.renderGameObjects(commandBuffer,snake.food);
 				lveRenderer.endSwapChainRenderPass(commandBuffer);
 				lveRenderer.endFrame();
 			}
@@ -36,7 +45,7 @@ namespace lve {
 	}
 
 	void FirstApp::loadGameObjects() {
-		std::vector<LveModel::Vertex> vertices {
+		/*std::vector<LveModel::Vertex> vertices {
 			{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
 			{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
 			{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
@@ -49,9 +58,11 @@ namespace lve {
 		triangle.color = {.1f, .8f, .1f};
 		triangle.transform2d.translation.x = .2f;
 		triangle.transform2d.scale = {2.f, 0.5f};
-		triangle.transform2d.rotation = .25f * glm::two_pi<float>();
+		triangle.transform2d.rotation = .25f * glm::two_pi<float>();*/
 
-		gameObjects.push_back(std::move(triangle));
+		
+
+		//gameObjects.push_back(std::move(triangle));
 	}
 }
 
