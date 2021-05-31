@@ -4,7 +4,7 @@ LDFLAGS = -L$(GLFW_PATH)\lib-mingw-w64 -L$(VULKAN_SDK_PATH)/Lib -lglfw3dll -lvul
 
 # target = a.out - Compiles all .cpp files in src into a.out
 a.exe: src/*.cpp
-	g++ $(CFLAGS) -o a.exe src/*.cpp $(LDFLAGS)
+	g++ $(CFLAGS) -o a.exe src/*.cpp $(LDFLAGS) -static-libgcc -static-libstdc++
 
 .PHONY: test clean
 
